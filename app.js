@@ -12,6 +12,7 @@ var upload = require('superagent');
 
 app.use(bodyParser.json());
 app.set('views', './views');
+app.set('port', (process.env.PORT || 5000));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
@@ -138,4 +139,6 @@ app.post('/smooch', function(req, res) {
 });
 
 
-app.listen(3000);
+app.listen(app.get('port'), function() {
+    console.log('App is running, server is listening on port ', app.get('port'));
+});
