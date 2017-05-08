@@ -129,6 +129,7 @@ app.post('/smooch', function(req, res) {
                   if(err) {
                     console.log(err);
                     res.sendStatus(500);
+                    return;
                   }
 
                   res.sendStatus(200);
