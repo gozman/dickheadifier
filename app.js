@@ -23,6 +23,12 @@ app.get('/', function(req, res) {
 app.post('/start', function(req, res) {
   var appUserId = req.body.appUser._id;
 
+  var smooch = new SmoochCore({
+      keyId: process.env['SMOOCH_KEY'],
+      secret: process.env['SMOOCH_SECRET'],
+      scope: 'app'
+  });
+
   smooch.appUsers.sendMessage(appUserId, {
     type: 'text',
     text: "Hi, I'm Dickhead bot. Send me an image and I'll add some dick to it.",
