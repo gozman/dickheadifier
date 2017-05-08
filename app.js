@@ -62,10 +62,6 @@ app.post('/smooch', function(req, res) {
     }).then(() => {});
   }
 
-  const face = cognitiveServices.face({
-    API_KEY: process.env['FACE_API_KEY']
-  });
-
   const parameters = {
     returnFaceId: "true",
     returnFaceLandmarks: "false"
