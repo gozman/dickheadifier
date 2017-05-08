@@ -128,7 +128,12 @@ app.post('/smooch', function(req, res) {
                 .end(function(err, response) {
                   if(err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    smooch.appUsers.sendMessage(appUserId, {
+                      type: 'text',
+                      text: "Something went wrong, try another image maybe?",
+                      role: 'appMaker'
+                    }).then(() => {res.sendStatus(500);});
+
                     return;
                   }
 
