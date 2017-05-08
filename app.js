@@ -84,7 +84,7 @@ app.post('/smooch', function(req, res) {
     .end(function(err, response) {
         if(err) {
           console.log(err);
-          res.send(500);
+          res.sendStatus(500);
         }
 
         var faces = response.body;
