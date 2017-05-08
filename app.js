@@ -6,8 +6,6 @@ const SmoochCore = require('smooch-core');
 
 require('dotenv').config();
 
-const cognitiveServices = require('cognitive-services');
-
 var app = express();
 var request = require('superagent');
 var upload = require('superagent');
