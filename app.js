@@ -1,6 +1,8 @@
 var express = require('express');
 var exphbs = require('express-handlebars');
 var jimp = require('jimp');
+const bodyParser = require('body-parser');
+const SmoochCore = require('smooch-core');
 
 require('dotenv').config();
 
@@ -8,7 +10,9 @@ const cognitiveServices = require('cognitive-services');
 
 var app = express();
 var request = require('superagent');
+var upload = require('superagent');
 
+app.use(bodyParser.json());
 app.set('views', './views');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
@@ -17,8 +21,47 @@ app.get('/', function(req, res) {
   res.render('home');
 });
 
-app.get('/go', function(req, res) {
-  var srcUrl = req.query.srcUrl;
+app.post('/start', function(req, res) {
+  var appUserId = req.body.appUser._id;
+
+  smooch.appUsers.sendMessage(appUserId, {
+    type: 'text',
+    text: "Hi, I'm Dickhead bot. Send me an image and I'll add some dick to it.",
+    role: 'appMaker'
+  }).then(() => {
+    res.sendStatus(200);
+  });
+
+  return;
+})
+
+app.post('/smooch', function(req, res) {
+  var srcUrl = req.body.messages[0].mediaUrl;
+  var appUserId = req.body.appUser._id;
+  var smooch = new SmoochCore({
+      keyId: process.env['SMOOCH_KEY'],
+      secret: process.env['SMOOCH_SECRET'],
+      scope: 'app'
+  });
+
+  if(!srcUrl) {
+    //No image was sent...
+    smooch.appUsers.sendMessage(appUserId, {
+      type: 'text',
+      text: "Send me an image, and I'll add some dick to it if I can",
+      role: 'appMaker'
+    }).then(() => {
+      res.sendStatus(200);
+    });
+
+    return;
+  } else {
+    smooch.appUsers.sendMessage(appUserId, {
+      type: 'text',
+      text: "Hmmm, let me take a look...",
+      role: 'appMaker'
+    }).then(() => {});
+  }
 
   const face = cognitiveServices.face({
     API_KEY: process.env['FACE_API_KEY']
@@ -44,6 +87,21 @@ app.get('/go', function(req, res) {
         }
 
         var faces = response.body;
+        if(faces.length) {
+          smooch.appUsers.sendMessage(appUserId, {
+            type: 'text',
+            text: "Found some faces, give me a sec to make some magic happen",
+            role: 'appMaker'
+          }).then(() => {});
+        } else {
+          smooch.appUsers.sendMessage(appUserId, {
+            type: 'text',
+            text: "Didn't find any faces",
+            role: 'appMaker'
+          }).then(() => {res.sendStatus(200)});
+
+          return;
+        }
 
         jimp.read('http://i.imgur.com/LhgKb7n.png', function(err, dick) {
           jimp.read(srcUrl, function(err, img) {
@@ -54,18 +112,32 @@ app.get('/go', function(req, res) {
 
                 dick.resize(faces[i].faceRectangle.width*1.25, faces[i].faceRectangle.height*1.8);
                 img.composite(dick, faces[i].faceRectangle.left-faces[i].faceRectangle.width/3, faces[i].faceRectangle.top-faces[i].faceRectangle.height/3);
-                img.write(i + '.jpg', function() {console.log("wrote dick!")});
               }
             }
 
-            img.write( 'output.jpg', function() {
-              console.log('done!');
-            } );
+
+            img.getBuffer(jimp.MIME_JPEG, function(err, imgBuffer) {
+              upload
+                .post('https://api.smooch.io/v1/appusers/' + appUserId + '/images')
+                .set('Authorization', smooch.authHeaders.Authorization)
+                .set('content-type', 'multipart/form-data')
+                .attach('source', imgBuffer, {filename: 'upload.jpg'})
+                .field('role', 'appMaker')
+                .field('name', 'DickheadBot')
+                .end(function(err, response) {
+                  if(err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                  }
+
+                  res.sendStatus(200);
+                });
+            });
           });
         });
-
-        res.redirect("/");
     });
+
 });
+
 
 app.listen(3000);

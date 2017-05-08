@@ -2,17 +2,20 @@
   "name": "dickheadifier",
   "version": "1.0.0",
   "description": "Take a photo with dudes in it. Expose their dickheads.",
-  "main": "index.js",
+  "main": "appUsers.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
-  "author": "",
+  "author": "gozmike",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "express-handlebars": "^3.0.0",
     "jimp": "^0.2.27",
+    "smooch-core": "^3.5.0",
     "superagent": "^3.5.2"
   }
 }
