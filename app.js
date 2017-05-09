@@ -108,7 +108,7 @@ app.post('/smooch', function(req, res) {
 
         let operations = [];
         let dicks = [];
-        for(var j=0; j<8; j++) {
+        for(var j=1; j<8; j++) {
           operations.push(new Promise((resolve, reject) => {
             jimp.read('./public/dicks/d' + j + '.png', (err, dick) => {
               if(err) {
