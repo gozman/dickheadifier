@@ -124,7 +124,7 @@ app.post('/smooch', function(req, res) {
         Promise.all(operations).then(() => {
           jimp.read(srcUrl, function(err, img) {
             for(var i=0; i<faces.length; i++) {
-              if(faces[i].faceAttributes.gender == 'male') {
+              if(faces[i].faceAttributes.gender == 'male' && faces[i].faceAttributes.age > 21 ) {
 
                 console.log(faces[i]);
 
@@ -133,6 +133,14 @@ app.post('/smooch', function(req, res) {
               }
             }
 
+
+            if(img.bitmap.width > 1500) {
+                img.scale(1500/img.bitmap.width);
+            }
+
+            if(img.bitmap.height > 1500) {
+              img.scale(1500/img.bitmap.height);
+            }
 
             img.getBuffer(jimp.MIME_JPEG, function(err, imgBuffer) {
               upload
