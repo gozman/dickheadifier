@@ -85,6 +85,8 @@ app.post('/smooch', function(req, res) {
         if(err) {
           console.log(err);
           res.sendStatus(500);
+
+          return;
         }
 
         var faces = response.body;
@@ -104,15 +106,30 @@ app.post('/smooch', function(req, res) {
           return;
         }
 
-        jimp.read('http://i.imgur.com/LhgKb7n.png', function(err, dick) {
+        let operations = [];
+        let dicks = [];
+        for(var j=0; j<8; j++) {
+          operations.push(new Promise((resolve, reject) => {
+            jimp.read('./public/dicks/d' + j + '.png', (err, dick) => {
+              if(err) {
+                reject(err);
+              } else {
+                dicks.push(dick);
+                resolve();
+              }
+            });
+          }));
+        }
+
+        Promise.all(operations).then(() => {
           jimp.read(srcUrl, function(err, img) {
             for(var i=0; i<faces.length; i++) {
               if(faces[i].faceAttributes.gender == 'male') {
 
                 console.log(faces[i]);
 
-                dick.resize(faces[i].faceRectangle.width*1.25, faces[i].faceRectangle.height*1.8);
-                img.composite(dick, faces[i].faceRectangle.left-faces[i].faceRectangle.width/3, faces[i].faceRectangle.top-faces[i].faceRectangle.height/3);
+                dick[0].resize(faces[i].faceRectangle.width*1.25, faces[i].faceRectangle.height*1.8);
+                img.composite(dick[0], faces[i].faceRectangle.left-faces[i].faceRectangle.width/3, faces[i].faceRectangle.top-faces[i].faceRectangle.height/3);
               }
             }
 
