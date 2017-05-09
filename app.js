@@ -123,7 +123,7 @@ app.post('/smooch', function(req, res) {
 
         Promise.all(operations).then(() => {
           jimp.read(srcUrl, function(err, img) {
-            for(var i=0; i<faces.length; i++) {
+            for(var i=faces.length-1; i>=0; i--) {
               if(faces[i].faceAttributes.gender == 'male' && faces[i].faceAttributes.age > 21 ) {
 
                 console.log(faces[i]);
