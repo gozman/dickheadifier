@@ -128,8 +128,8 @@ app.post('/smooch', function(req, res) {
 
                 console.log(faces[i]);
 
-                dick[0].resize(faces[i].faceRectangle.width*1.25, faces[i].faceRectangle.height*1.8);
-                img.composite(dick[0], faces[i].faceRectangle.left-faces[i].faceRectangle.width/3, faces[i].faceRectangle.top-faces[i].faceRectangle.height/3);
+                dicks[0].resize(faces[i].faceRectangle.width*1.25, faces[i].faceRectangle.height*1.8);
+                img.composite(dicks[0], faces[i].faceRectangle.left-faces[i].faceRectangle.width/3, faces[i].faceRectangle.top-faces[i].faceRectangle.height/3);
               }
             }
 
